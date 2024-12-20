@@ -1,17 +1,15 @@
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-
+import { Customer, CustomerSchema } from './entities/customer.entity';
 import { CustomerController } from './controllers/customers.controller';
 import { CustomersService } from './services/customers.service';
-import { Customer, CustomerSchema } from './entities/customer.entity';
-import { UsersController } from './controllers/users.controller';
-import { UsersService } from './services/users.service';
-import { User, UserSchema } from './entities/user.entity';
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Order, OrderSchema } from './entities/order.entity';
 import { OrdersController } from './controllers/orders.controller';
 import { OrdersService } from './services/orders.service';
-import { Order, OrderSchema } from './entities/order.entity';
-
 import { ProductsModule } from './../products/products.module';
+import { User, UserSchema } from './entities/user.entity';
+import { UsersController } from './controllers/users.controller';
+import { UsersService } from './services/users.service';
 
 @Module({
   imports: [
@@ -33,5 +31,6 @@ import { ProductsModule } from './../products/products.module';
   ],
   controllers: [CustomerController, UsersController, OrdersController],
   providers: [CustomersService, UsersService, OrdersService],
+  exports: [UsersService],
 })
 export class UsersModule {}
