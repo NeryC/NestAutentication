@@ -1,3 +1,11 @@
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { IsPublic } from 'src/auth/decorators/is-public-key/is-public.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
+import { MongoIdPipe } from './../../common/mongo-id.pipe';
+import { ProductsService } from './../services/products.service';
+import { Role } from 'src/auth/models/roles.model';
+import { Roles } from 'src/auth/decorators/role/role.decorator';
+import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
 import {
   Controller,
   Get,
@@ -9,26 +17,21 @@ import {
   Delete,
   HttpStatus,
   HttpCode,
-  Res,
-  // ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
-import { Response } from 'express';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
-
-import { ParseIntPipe } from '../../common/parse-int.pipe';
-import { MongoIdPipe } from './../../common/mongo-id.pipe';
 import {
   CreateProductDto,
   UpdateProductDto,
   FilterProductsDto,
 } from '../dtos/products.dtos';
-import { ProductsService } from './../services/products.service';
 
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('products')
 @Controller('products')
 export class ProductsController {
   constructor(private productsService: ProductsService) {}
 
+  @IsPublic()
   @Get()
   @ApiOperation({ summary: 'List of products' })
   getProducts(@Query() params: FilterProductsDto) {
@@ -46,6 +49,7 @@ export class ProductsController {
     return this.productsService.findOne(productId);
   }
 
+  @Roles(Role.ADMIN)
   @Post()
   create(@Body() payload: CreateProductDto) {
     return this.productsService.create(payload);
